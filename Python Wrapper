@@ -1,0 +1,33 @@
+#Minyoung Kim
+#Fetch PurpleAir Data via OpenAQ
+
+import os
+import requests
+
+# Directory path to create the folder
+parent_directory = 'FILE PATH'
+
+# Name of the folder to store the data
+folder_name = 'FILE_NAME'
+
+# Create the directory
+directory = os.path.join(parent_directory, folder_name)
+os.makedirs(directory, exist_ok=True)
+
+# Base URL for data download
+url_base = 'https://openaq-data-archive.s3.amazonaws.com/records/csv.gz/locationid=#######/year=YYYY/month=MM/location-#######-YYYYMM'
+
+# Download and save data for each day
+for day in range(1, 32):  #Day From 1st to 31st
+    # Construct the URL for data download
+    url = f'{url_base}{day:02d}.csv.gz'
+    # Send an HTTP GET request
+    response = requests.get(url)
+    # Check the response status
+    if response.status_code == 200:
+        # If the request is successful, save the data to a file
+        with open(os.path.join(directory, f'location_data_YYYYMM{day:02d}.csv.gz'), 'wb') as f: 
+            f.write(response.content)
+            print(f"Data downloaded and saved: location_data_YYYYMM{day:02d}.csv.gz")  
+    else:
+        print(f"Failed to download data: {url}")
